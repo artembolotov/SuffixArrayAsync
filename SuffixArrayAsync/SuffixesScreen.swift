@@ -49,11 +49,23 @@ struct SuffixesScreen: View {
                     List {
                         let suffixes = suffixes(for: mode)
                         
+                        let min = suffixData.searchTimes.values.min()
+                        let max = suffixData.searchTimes.values.max()
+                        
                         ForEach(suffixes, id: \.self) { suffix in
+                            let searchTime = suffixData.searchTimes[suffix, default: 0]
+                            
                             HStack(alignment: .firstTextBaseline) {
                                 Text(suffix)
+                                
                                 Text("- \(suffixData.counts[suffix] ?? 0)")
                                     .foregroundColor(.secondary)
+                                
+                                Spacer()
+                                
+                                Text("\(searchTime)")
+                                    .foregroundColor(searchTime == min ? .green : searchTime == max ? .red : .primary)
+                                    .opacity(mode == .top ? 0 : 1)
                             }
                         }
                     }
@@ -70,12 +82,5 @@ struct SuffixesScreen: View {
     
     func close() {
         isPresented = false
-    }
-}
-
-struct SuffixesScreen_Previews: PreviewProvider {
-    
-    static var previews: some View {
-        SuffixesScreen(suffixData: .constant(SuffixData.createSync(for: "abracadabra")), isPresented: .constant(true))
     }
 }
